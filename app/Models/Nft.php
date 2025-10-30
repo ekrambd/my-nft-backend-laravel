@@ -19,9 +19,4 @@ class Nft extends Model
         'is_mint',
     ];
 
-    public function getImageAttribute($value)
-    {
-        return $value ? url('/')."/".$value : null;
-    }
-
 }

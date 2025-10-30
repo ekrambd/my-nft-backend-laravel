@@ -13,24 +13,28 @@ class MintMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {   
-        if($request->has('nft_id'))
+
+        if($request->has('nft_id')){
+            $nft_id = $request->nft_id;
+            $nft = Nft::find($nft_id);
+        } elseif ($request->route('nft')) {
+            $nft = $request->route('nft');
+        } else {
+            $nft = null;
+        }
+
+        if($nft)
         {
-        	$nft = Nft::find($request->nft_id);
-
-	        if (!$nft) {
-	            return response()->json(['status' => false, 'message' => 'NFT not found'], 404);
-	        }
-
-	        if ($nft->is_mint == 1) {
+        	if ($nft->is_mint == 1) {
 	            return response()->json([
 	                'status' => false,
 	                'mint_id' => 0,
-	                'nft_id' => 0,
+	                'nft_id' => $nft->id,
 	                'message' => 'NFT has already been minted'
 	            ], 400);
 	        }
         }
 
-        return $next($request);
+        return $next($request); 
     }
 }

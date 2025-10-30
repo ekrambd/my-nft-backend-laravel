@@ -20,7 +20,7 @@ class NftController extends Controller
             $query = Nft::query();
             if($user->role == 'user')
             {
-                $query->where('is_mint',0);
+                $query->where('id',$user->id)->where('is_mint',0);
             }
             if($request->has('search'))
             {
@@ -150,7 +150,7 @@ class NftController extends Controller
             $nft->image = $image_url;
             $nft->update();
 
-            return response()->json(['status'=>true, 'nft_id'=>intval($nft->id), 'message'=>'Successfully the nft has updated ']);
+            return response()->json(['status'=>true, 'nft_id'=>intval($nft->id), 'message'=>'Successfully the nft has updated']);
 
         }catch(Exception $e){
             return response()->json(['status'=>false, 'code'=>$e->getCode(), 'message'=>$e->getMessage()],500);
