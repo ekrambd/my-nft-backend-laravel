@@ -28,7 +28,7 @@ class AuthController extends Controller
 
             $user = User::where('wallet_address',$request->wallet_address)->first();
 
-            if($user)
+            if($user && $user->role == 'admin')
             {
             	Auth::login($user);
             	$user = user();
@@ -44,6 +44,85 @@ class AuthController extends Controller
     }
 
     public function adminLogout(Request $request)
+    {
+        try
+        {
+            auth()->user()->tokens()->delete();
+            return response()->json(['status'=>true, 'message'=>'Successfully Logged Out']);
+        }catch(Exception $e){
+            return response()->json(['status'=>false, 'code'=>$e->getCode(), 'message'=>$e->getMessage()],500);
+        }
+    }
+
+    public function userRegister(Request $request)
+    {
+        try
+        {
+            $validator = Validator::make($request->all(), [
+                'name' => 'nullable|string|max:50',
+                'wallet_address' => 'required|string|unique:users',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false, 
+                    'message' => 'Please fill all requirement fields', 
+                    'data' => $validator->errors()
+                ], 422);  
+            }
+
+            $user = User::create([
+                'name' => $request->name,
+                'role' => 'user',
+                'wallet_address' => $request->wallet_address,
+                'password' => bcrypt('123456')
+            ]);
+
+            Auth::login($user);
+            $token = $user->createToken('MyApp')->plainTextToken;
+            return response()->json(['status'=>true, 'message'=>'Successfully Register', 'token'=>$token, 'user'=>$user],200);
+
+        }catch(Exception $e){
+            return response()->json(['status'=>false, 'code'=>$e->getCode(), 'message'=>$e->getMessage()],500);
+        }
+    }
+
+
+    public function userLogin(Request $request)
+    {
+        try
+        {  
+
+            $validator = Validator::make($request->all(), [
+                'wallet_address' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false, 
+                    'message' => 'Please fill all requirement fields', 
+                    'data' => $validator->errors()
+                ], 422);  
+            }
+
+            $user = User::where('wallet_address',$request->wallet_address)->first();
+
+            if($user)
+            {
+                Auth::login($user);
+                $user = user();
+                $token = $user->createToken('MyApp')->plainTextToken;
+                return response()->json(['status'=>true, 'message'=>'Successfully Logged IN', 'token'=>$token, 'user'=>$user],200);
+            }
+
+            return response()->json(['status'=>false, 'message'=>'Invalid Wallet Address', 'token'=>"", 'user'=> new \stdClass()],401);
+
+        }catch(Exception $e){
+            return response()->json(['status'=>false, 'code'=>$e->getCode(), 'message'=>$e->getMessage()],500);
+        }
+    }
+
+    public function userLogout(Request $request)
     {
         try
         {

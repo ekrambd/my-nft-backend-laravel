@@ -11,3 +11,12 @@ Route::prefix('admin')->group(function () {
        Route::post('logout', [AuthController::class, 'adminLogout']);
     });
 });
+
+//user auth
+Route::prefix('user')->group(function () {
+	Route::post('/register', [AuthController::class, 'userRegister']);
+    Route::post('/login', [AuthController::class, 'userLogin']);
+    Route::middleware('auth:sanctum')->group( function () { 
+       Route::post('logout', [AuthController::class, 'userLogout']);
+    });
+});
