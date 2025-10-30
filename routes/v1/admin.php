@@ -8,7 +8,9 @@ use App\Http\Controllers\MintController;
 Route::middleware(['auth:sanctum','mint.check'])->group(function () {
 	//nfts
     Route::apiResource('nfts', NftController::class);
-    //mints
-    Route::post('save-mint', [MintController::class, 'saveMint']);
-    Route::get('/mints', [MintController::class, 'mints']);
+    //app setttings
+    Route::prefix('settings')->group(function () {
+    	Route::get('/info', [SettingController::class, 'info']);
+    	Route::post('/app', [SettingController::class, 'appSettings']);
+    });
 }); 
