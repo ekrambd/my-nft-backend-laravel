@@ -12,7 +12,7 @@ Route::middleware(['auth:sanctum', 'mint.check', 'throttle:60,1'])->group(functi
     Route::apiResource('nfts', NftController::class);
 
     Route::prefix('mints')->group(function () {
-        Route::post('/save', [MintController::class, 'saveMint'])->middleware('throttle:20,1'); // tighter limit
+        Route::post('/save', [MintController::class, 'saveMint']);
         Route::get('/', [MintController::class, 'mints']);
     });
 
