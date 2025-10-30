@@ -1,22 +1,32 @@
 <?php
-
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
-//admin auth
+// ================== Admin Auth ==================
 Route::prefix('admin')->group(function () {
-    Route::post('/login', [AuthController::class, 'adminLogin']);
-    Route::middleware('auth:sanctum')->group( function () { 
-       Route::post('logout', [AuthController::class, 'adminLogout']);
+
+    // Limit admin login attempts to 5 per minute per IP
+    Route::post('/login', [AuthController::class, 'adminLogin'])
+        ->middleware('throttle:5,1');
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('logout', [AuthController::class, 'adminLogout'])
+            ->middleware('throttle:20,1'); // Optional: 20 requests/min for safety
     });
 });
 
-//user auth
+// ================== User Auth ==================
 Route::prefix('user')->group(function () {
-	Route::post('/register', [AuthController::class, 'userRegister']);
-    Route::post('/login', [AuthController::class, 'userLogin']);
-    Route::middleware('auth:sanctum')->group( function () { 
-       Route::post('logout', [AuthController::class, 'userLogout']);
+
+    // Limit registration and login to 5 per minute per IP
+    Route::post('/register', [AuthController::class, 'userRegister'])
+        ->middleware('throttle:5,1');
+
+    Route::post('/login', [AuthController::class, 'userLogin'])
+        ->middleware('throttle:5,1');
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('logout', [AuthController::class, 'userLogout'])
+            ->middleware('throttle:20,1');
     });
 });

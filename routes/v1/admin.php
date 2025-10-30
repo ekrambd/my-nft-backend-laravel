@@ -4,13 +4,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NftController;
 use App\Http\Controllers\MintController;
+use App\Http\Controllers\SettingController;
 
-Route::middleware(['auth:sanctum','mint.check'])->group(function () {
-	//nfts
+Route::middleware(['auth:sanctum', 'mint.check', 'throttle:60,1'])->group(function () {
+
+    // NFTs routes
     Route::apiResource('nfts', NftController::class);
-    //app setttings
-    Route::prefix('settings')->group(function () {
-    	Route::get('/info', [SettingController::class, 'info']);
-    	Route::post('/app', [SettingController::class, 'appSettings']);
+
+    Route::prefix('mints')->group(function () {
+        Route::post('/save', [MintController::class, 'saveMint'])->middleware('throttle:20,1'); // tighter limit
+        Route::get('/', [MintController::class, 'mints']);
     });
-}); 
+
+    // App settings
+    Route::prefix('settings')->group(function () {
+        Route::get('/info', [SettingController::class, 'info']);
+        Route::post('/app', [SettingController::class, 'appSettings']);
+    });
+});
