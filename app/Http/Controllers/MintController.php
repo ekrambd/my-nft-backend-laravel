@@ -66,7 +66,7 @@ class MintController extends Controller
     		$query = Mint::query();
     		if($user->role == 'user')
     		{
-    			$query->where('user_id',$user->id);
+    			$query->where('user_id',$user->id)->where('status','mint');
     		}
     		if($request->has('token_id'))
     		{
@@ -80,6 +80,8 @@ class MintController extends Controller
     		{
     			$query->where('date', '<=', $request->to_date);
     		}
+            $mints = $query->latest()->paginate(10);
+            return response()->json($mints);
     	}catch(Exception $e){
             return response()->json(['status'=>false, 'code'=>$e->getCode(), 'message'=>$e->getMessage()],500);
         }
