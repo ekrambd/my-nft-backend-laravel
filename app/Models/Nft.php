@@ -19,4 +19,14 @@ class Nft extends Model
         'is_mint',
     ];
 
+    public function mints()
+    {
+        return $this->hasMany(Mint::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }

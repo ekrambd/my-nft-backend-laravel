@@ -7,4 +7,5 @@ use App\Http\Controllers\MintController;
 Route::middleware(['auth:sanctum', 'mint.check', 'throttle:60,1'])->group(function () {
     Route::post('save-mint', [MintController::class, 'saveMint']);
     Route::get('/mints', [MintController::class, 'mints']);
+    Route::get('/mint/{id}', [MintController::class, 'mintDetails']);
 });

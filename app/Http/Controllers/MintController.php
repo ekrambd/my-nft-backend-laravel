@@ -86,4 +86,15 @@ class MintController extends Controller
             return response()->json(['status'=>false, 'code'=>$e->getCode(), 'message'=>$e->getMessage()],500);
         }
     }
+
+    public function mintDetails($id)
+    {
+        try
+        {
+            $mint = Mint::with('user','nft')->findorfail($id);
+            return response()->json(['status'=>true, 'data'=>$mint]);
+        }catch(Exception $e){
+            return response()->json(['status'=>false, 'code'=>$e->getCode(), 'message'=>$e->getMessage()],500);
+        }
+    }
 }

@@ -22,4 +22,14 @@ class Mint extends Model
         'time',
     ];
 
+    public function nft()
+    {
+        return $this->belongsTo(Nft::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }

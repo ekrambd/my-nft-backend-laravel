@@ -44,4 +44,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function nfts()
+    {
+        return $this->hasMany(Nft::class);
+    }
+
+    public function mints()
+    {
+        return $this->hasMany(Mint::class);
+    }
 }
